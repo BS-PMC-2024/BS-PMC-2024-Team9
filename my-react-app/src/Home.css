@@ -1,0 +1,49 @@
+.home-container {
+  width: 100%;
+  /* Existing styles */
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.tradingview-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.tradingview-widgets {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tradingview-widgets > * {
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.tradingview-widgets > *:first-child {
+  margin-left: 0;
+}
+
+.tradingview-widgets > *:last-child {
+  margin-right: 0;
+}
+
+.cta-section {
+  text-align: center;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #0056b3;
+}

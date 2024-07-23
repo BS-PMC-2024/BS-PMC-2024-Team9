@@ -1,0 +1,164 @@
+#root {
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* App.css */
+
+
+
+
+
+.input-form div {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+
+
+.input-form input, .input-form select, .input-form button {
+  padding: 5px;
+  font-size: 16px;
+}
+
+
+
+
+.news-container {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  height: 600px; /* Match the height of the chart for consistency */
+}
+
+
+.news-container h3 {
+  margin: 0 0 10px;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+}
+
+.chart-container {
+  flex: 2;
+  padding: 20px;
+}
+
+.news-container {
+  flex: 1;
+  padding: 20px;
+}
+
+.form-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-group {
+  margin: 10px 0;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* עיצוב עבור ה-NavBar */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: rgb(79, 139, 230);
+  color: white;
+  padding: 1.2rem;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.trade {
+  position: fixed;
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  color: white;
+  z-index: 100;
+  padding: -33.2rem;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+
+}
+
+.navbar-list {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0.3rem;
+}
+
+.navbar-item {
+  margin: 0 1rem;
+}
+
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.navbar-link:hover {
+  text-decoration: underline;
+}
+
+/* רווח כדי שהתוכן לא יתחיל מתחת ל-NavBar */
+body {
+  padding-top: 60px; /* גובה ה-NavBar בתוספת רווח */
+}

@@ -1,0 +1,50 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.input-form {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  
+}
+
+.input-form div {
+  margin-bottom: 10px;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.chart-container {
+  flex: 3;
+  margin-right: 20px;
+}
+
+.trades-container, .news-container, .prediction-container {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.trades-container ul, .news-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.trades-container li, .news-container li {
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+.trades-container li span, .news-container li span {
+  display: block;
+}

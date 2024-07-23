@@ -1,0 +1,7 @@
+Django>=3.0,<4.0
+djangorestframework
+gunicorn
+django-cors-headers
+djangorestframework-jwt
+djongo
+pymongo
