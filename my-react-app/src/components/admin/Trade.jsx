@@ -1,38 +1,26 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import { url } from '../../features/api';
-
+import React from 'react';
+import TradingViewWidget from '../tradingview/TradingViewWidget';
+import styled from 'styled-components';
 const Trade = () => {
-  const [historicalData, setHistoricalData] = useState([]);
-
-  const fetchHistoricalData = async (ticker, period, interval) => {
-    try {
-      const response = await axios.get(`${url}/historicaldata/${ticker}`, {
-        params: { period, interval },
-        withCredentials: true,
-      });
-      setHistoricalData(response.data);
-    } catch (error) {
-      console.error('Error fetching historical data:', error);
-    }
-  };
-
-  const onSubmit = (event) => {
-    event.preventDefault();
-    const ticker = 'AAPL';
-    const period = '2D';
-    const interval = '1day';
-    fetchHistoricalData(ticker, period, interval);
-  };
 
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <button type="submit">Fetch Historical Data</button>
-      </form>
-      <pre>{JSON.stringify(historicalData, null, 2)}</pre>
-    </div>
+    <TradingSection>
+      <TradingViewWidget />
+    </TradingSection>
+    
   );
 };
 
 export default Trade;
+
+const TradingSection = styled.div`
+    grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 18px;
+  position: absolute;
+  left: 500px;
+  top: 200px;
+
+`;

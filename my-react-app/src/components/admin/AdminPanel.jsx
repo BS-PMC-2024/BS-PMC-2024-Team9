@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Button } from '@material-ui/core';
 import { toast } from 'react-toastify';
 import { setHeaders, url } from '../../features/api';
-
+//admin panel
 const AdminPanel = () => {
   const user = useSelector((state) => state.auth);
   const [users, setUsers] = useState([]);
