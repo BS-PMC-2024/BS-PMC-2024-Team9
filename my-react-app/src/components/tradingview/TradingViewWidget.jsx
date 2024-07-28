@@ -12,8 +12,8 @@ function TradingViewWidget() {
       script.async = true;
       script.innerHTML = `
         {
-          "width": "980",
-          "height": "610",
+          "width": "1200",
+          "height": "800",
           "symbol": "NASDAQ:AAPL",
           "interval": "D",
           "timezone": "Etc/UTC",
