@@ -3,7 +3,7 @@ import Plot from 'react-plotly.js';
 import styled from 'styled-components';
 import { IconButton } from '@material-ui/core';
 import { Star } from '@material-ui/icons';
-
+// calculat moving average
 const calculateMovingAverage = (data, window) => {
   let movingAverages = [];
   for (let i = 0; i < data.length; i++) {
@@ -17,7 +17,7 @@ const calculateMovingAverage = (data, window) => {
   }
   return movingAverages;
 };
-
+//chack the date
 const getDateOrDatetime = (item, interval) => {
   const intradayIntervals = ['1m', '5m', '15m', '1h'];
   return intradayIntervals.includes(interval) ? item.Datetime : item.Date;
