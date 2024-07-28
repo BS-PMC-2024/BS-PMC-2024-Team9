@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from "../features/authSlice";
 import { toast } from 'react-toastify';
 import TradingViewCrypto from './tradingview/TradingViewCrypto';
-
+//nav bar
 const NavBar = () => {
   const user = useSelector((state) => state.auth);
   const dispatch = useDispatch();
