@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import {jwtDecode} from "jwt-decode";
 import axios from "axios";
 import { url, setHeaders } from "./api";
+import { clearStockData } from "./stockSlice";
 
 const initialState = {
   token: localStorage.getItem("token"),
@@ -94,7 +95,7 @@ const authSlice = createSlice({
     },
     logoutUser(state, action) {
       localStorage.removeItem("token");
-
+      
       return {
         ...state,
         token: "",
@@ -162,5 +163,10 @@ const authSlice = createSlice({
 });
 
 export const { loadUser, logoutUser } = authSlice.actions;
+
+export const userLogout = () => (dispatch) => {
+  dispatch(logoutUser());
+  dispatch(clearStockData());
+}
 
 export default authSlice.reducer;

@@ -16,9 +16,12 @@ const Login = () => {
 
   useEffect(() => {
     console.log("User ID:", auth._id); // For debugging
-    if (auth._id) {
+    if (auth._id && !auth.isAdmin) {
       console.log("User ID:", auth._id);
       navigate("/stockdata");
+    }
+    else if (auth._id){
+      navigate("/")
     }
   }, [auth._id, navigate]);
 

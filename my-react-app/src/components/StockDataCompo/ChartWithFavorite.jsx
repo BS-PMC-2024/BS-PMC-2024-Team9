@@ -17,10 +17,12 @@ const calculateMovingAverage = (data, window) => {
   }
   return movingAverages;
 };
-//chack the date
+
+// Check the date
 const getDateOrDatetime = (item, interval) => {
-  const intradayIntervals = ['1m', '5m', '15m', '1h'];
-  return intradayIntervals.includes(interval) ? item.Datetime : item.Date;
+  const intradayIntervals = ['1m', '2m' ,'5m', '15m', '60m'];
+  const dateValue = intradayIntervals.includes(interval) ? item.Datetime : item.Date;
+  return dateValue;
 };
 
 const ChartWithFavorite = ({ data, ticker, handleAddToFavorites, movingAverages, interval }) => {

@@ -52,4 +52,27 @@ router.post('/withdraw-money', auth, async (req, res) => {
   }
 });
 
+
+router.put('/preferences', async (req, res) => {
+  const { userId, preferences } = req.body;
+
+
+  const { language, timezone } = preferences;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.preferences.language = language;
+    user.preferences.timezone = timezone;
+    await user.save();
+
+    res.status(200).json({ preferences: user.preferences });
+  } catch (error) {
+    res.status(500).json({ error: 'Error updating preferences' });
+  }
+});
+
 module.exports = router;

@@ -51,6 +51,19 @@ export const withdrawMoney = createAsyncThunk(
   }
 );
 
+export const updateUserPreferences = createAsyncThunk(
+  'profile/updateUserPreferences',
+  async ({ userId, preferences }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(`${url}/user/preferences`, { userId, preferences }, setHeaders());
+      localStorage.setItem("userPreferences", JSON.stringify(response.data.preferences));
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response ? err.response.data.error : 'Error updating preferences');
+    }
+  }
+);
+
 // Slice
 const profileSlice = createSlice({
   name: 'profile',
@@ -59,6 +72,7 @@ const profileSlice = createSlice({
     transactions: [],
     error: null,
     loading: false,
+    preferences: JSON.parse(localStorage.getItem("userPreferences")) || { language: 'English', timezone: 'UTC' },
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -86,6 +100,20 @@ const profileSlice = createSlice({
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(updateUserPreferences.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserPreferences.fulfilled, (state, action) => {
+        state.loading = false;
+        state.preferences = action.payload.preferences;
+        state.operationStatus = 'fulfilled';
+      })
+      .addCase(updateUserPreferences.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.operationStatus = 'rejected';
       })
       .addCase(addMoney.fulfilled, (state, action) => {
         if (state.portfolio) {

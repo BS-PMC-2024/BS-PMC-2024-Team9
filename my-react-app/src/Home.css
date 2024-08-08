@@ -10,6 +10,8 @@
 .tradingview-container {
   display: flex;
   flex-direction: column;
+  right: 20px;
+  top: 850px;
 }
 
 .tradingview-widgets {

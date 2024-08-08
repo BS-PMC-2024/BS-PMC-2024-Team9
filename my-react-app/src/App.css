@@ -113,7 +113,7 @@
   width: 100%;
 }
 
-/* עיצוב עבור ה-NavBar */
+/* NavBar styling */
 .navbar {
   position: fixed;
   top: 0;
@@ -133,13 +133,13 @@
   z-index: 100;
   padding: -33.2rem;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-
 }
 
 .navbar-list {
   list-style: none;
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 0;
   padding: 0.3rem;
 }
@@ -158,7 +158,23 @@
   text-decoration: underline;
 }
 
-/* רווח כדי שהתוכן לא יתחיל מתחת ל-NavBar */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-left: auto;
+  margin-right: 2rem;
+  
+}
+
+.user-greeting {
+  font-size: 30px;
+  color: #ffffff;
+  right: 120px;
+  position: absolute;
+  top: 27px;
+}
+
 body {
-  padding-top: 60px; /* גובה ה-NavBar בתוספת רווח */
+  padding-top: 80px; /* Increase padding for space below navbar */
 }

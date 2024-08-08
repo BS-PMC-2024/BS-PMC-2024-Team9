@@ -14,9 +14,10 @@ import Home from './components/Home';
 import StockDetail from './components/Details/StockDetail';
 import AnalystRecommendations from './components/Details/AnalystRecommendations ';
 import Trade from './components/admin/Trade';
-import AnalysisList from './components/Analysis/AnalysisList';
-import AddAnalysis from './components/Analysis/AddAnalysis';
 import AdminPanel from './components/admin/AdminPanel';
+import './i18n';
+import { useTranslation } from 'react-i18next';
+import i18n from './i18n';
 
 function App() {
 
@@ -37,6 +38,11 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+    i18n.changeLanguage(savedLanguage);
+  } , [i18n]);
+  
   return (
     <div className="App">
       <header className="App-header">
@@ -45,7 +51,7 @@ function App() {
       </header>
       <main>
         <Routes>
-          <Route path="/home" element={<Home/>}/>
+          <Route path="/" element={<Home/>}/>
           <Route path="/stockdata" element={<StockData />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -53,8 +59,6 @@ function App() {
           <Route path="/stock-detail/:ticker" element={<StockDetail/>}/>
           <Route path="/analystrecommendations" element={<AnalystRecommendations/>}/>
           <Route path="/trade" element={< Trade/>}/>
-          <Route path="/" element={<AnalysisList/>}/>
-          <Route path="/addanalysis" element={<AddAnalysis/>}/>
           <Route path="/adminpanel" element={<AdminPanel/>}/>
         </Routes>
       </main>

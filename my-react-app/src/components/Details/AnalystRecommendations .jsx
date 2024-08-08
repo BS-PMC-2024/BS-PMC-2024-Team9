@@ -1,3 +1,4 @@
+// components/AnalystRecommendations.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAnalystRecommendations } from '../../features/stockSlice';
@@ -21,7 +22,7 @@ const AnalystRecommendations = () => {
         toast.error(`Error: ${err}`);
       });
   };
-  console.log("ana",recommendations);
+
   return (
     <Container>
       <h2>Analyst Recommendations</h2>
@@ -43,9 +44,8 @@ const AnalystRecommendations = () => {
             <p><strong>period:</strong> {rec.period}</p>
             <p><strong>sell:</strong> {rec.sell}</p>
             <p><strong>strongBuy:</strong> {rec.strongBuy}</p>
-            <p><strong>StrongSell:</strong> {rec.strongSell}</p>
+            <p><strong>strongSell:</strong> {rec.strongSell}</p>
             <p><strong>symbol:</strong> {rec.symbol}</p>
-
           </Recommendation>
         ))}
       </RecommendationsContainer>
@@ -87,6 +87,9 @@ const ErrorMessage = styled.div`
 `;
 
 const RecommendationsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   margin-top: 2rem;
 `;
 
@@ -94,6 +97,12 @@ const Recommendation = styled.div`
   background: #fff;
   border: 1px solid #eee;
   padding: 1rem;
-  margin-bottom: 0.5rem;
   border-radius: 5px;
+  width: calc(33.33% - 1rem);
+  box-sizing: border-box;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
 `;

@@ -76,34 +76,88 @@ router.post('/buy', auth, async (req, res) => {
     }
 
     const totalCost = shares * price;
-    if (portfolio.cash_balance < totalCost) {
-      return res.status(400).json({ msg: 'Insufficient funds' });
-    }
 
-    portfolio.cash_balance -= totalCost;
     const stockIndex = portfolio.stocks.findIndex(stock => stock.ticker === ticker);
 
     if (stockIndex !== -1) {
-      // Update existing stock
-      portfolio.stocks[stockIndex].shares += shares;
-      // Update average price
+      // Update existing stock or handle covering short position
       const existingStock = portfolio.stocks[stockIndex];
-      const newTotalShares = existingStock.shares + shares;
-      existingStock.average_price = ((existingStock.shares * existingStock.average_price) + totalCost) / newTotalShares;
+      if (existingStock.shares < 0) {
+        // Covering a short position
+        const coveringShares = Math.min(shares, -existingStock.shares);
+        existingStock.shares += coveringShares;
+        portfolio.cash_balance += coveringShares * price;
+
+        const transactionProfitOrLoss = (existingStock.average_price - price) * coveringShares;
+
+        // Add transaction
+        portfolio.transactions.push({
+          ticker,
+          shares: coveringShares,
+          price,
+          type: 'Cover',
+          profitOrLoss: transactionProfitOrLoss,
+          closed: existingStock.shares === 0 // Close if shares are balanced
+        });
+
+        // Handle remaining shares as a new buy
+        if (shares > coveringShares) {
+          const remainingShares = shares - coveringShares;
+          existingStock.shares += remainingShares;
+          portfolio.cash_balance -= remainingShares * price;
+
+          // Update average price
+          existingStock.average_price = ((existingStock.shares * existingStock.average_price) + (remainingShares * price)) / existingStock.shares;
+
+          // Add transaction
+          portfolio.transactions.push({
+            ticker,
+            shares: remainingShares,
+            price,
+            type: 'Buy',
+            profitOrLoss: 0,
+            closed: false
+          });
+        }
+      } else {
+        // Regular buy
+        if (portfolio.cash_balance < totalCost) {
+          return res.status(400).json({ msg: 'Insufficient funds' });
+        }
+
+        portfolio.cash_balance -= totalCost;
+        existingStock.shares += shares;
+        existingStock.average_price = ((existingStock.shares * existingStock.average_price) + totalCost) / existingStock.shares;
+
+        // Add transaction
+        portfolio.transactions.push({
+          ticker,
+          shares,
+          price,
+          type: 'Buy',
+          profitOrLoss: 0,
+          closed: false
+        });
+      }
     } else {
       // Add new stock
-      portfolio.stocks.push({ ticker, shares, average_price: price });
-    }
+      if (portfolio.cash_balance < totalCost) {
+        return res.status(400).json({ msg: 'Insufficient funds' });
+      }
 
-    // Add transaction
-    portfolio.transactions.push({
-      ticker,
-      shares,
-      price,
-      type: 'Buy',
-      profitOrLoss: 0,
-      closed: false // Initial state is open
-    });
+      portfolio.cash_balance -= totalCost;
+      portfolio.stocks.push({ ticker, shares, average_price: price });
+
+      // Add transaction
+      portfolio.transactions.push({
+        ticker,
+        shares,
+        price,
+        type: 'Buy',
+        profitOrLoss: 0,
+        closed: false
+      });
+    }
 
     await portfolio.save();
     res.json(portfolio);
@@ -116,7 +170,7 @@ router.post('/buy', auth, async (req, res) => {
 // Sell stock
 router.post('/sell', auth, async (req, res) => {
   const { ticker, shares, price } = req.body;
-  
+
   if (!ticker || !shares || !price) {
     return res.status(400).json({ msg: 'Ticker, shares, and price are required' });
   }
@@ -129,40 +183,68 @@ router.post('/sell', auth, async (req, res) => {
     }
 
     const stockIndex = portfolio.stocks.findIndex(stock => stock.ticker === ticker);
-    if (stockIndex === -1 || portfolio.stocks[stockIndex].shares < shares) {
-      return res.status(400).json({ msg: 'Not enough shares to sell' });
+    if (stockIndex === -1) {
+      // If no stock exists, create a short position
+      const totalRevenue = shares * price;
+      portfolio.cash_balance -= totalRevenue;
+      portfolio.stocks.push({ ticker, shares: -shares, average_price: price });
+
+      // Add transaction
+      portfolio.transactions.push({
+        ticker,
+        shares,
+        price,
+        type: 'Short',
+        profitOrLoss: 0,
+        closed: false
+      });
+
+      await portfolio.save();
+      return res.json(portfolio);
     }
 
-    const totalRevenue = shares * price;
-    portfolio.cash_balance += totalRevenue;
-    portfolio.stocks[stockIndex].shares -= shares;
+    const existingStock = portfolio.stocks[stockIndex];
 
-    if (portfolio.stocks[stockIndex].shares === 0) {
-      portfolio.stocks.splice(stockIndex, 1);
+    if (existingStock.shares >= shares) {
+      // Regular sell
+      const totalRevenue = shares * price;
+      portfolio.cash_balance += totalRevenue;
+      existingStock.shares -= shares;
+
+      if (existingStock.shares === 0) {
+        portfolio.stocks.splice(stockIndex, 1);
+      }
+
+      // Calculate profit or loss for the transaction
+      const transactionProfitOrLoss = (price - existingStock.average_price) * shares;
+
+      // Add transaction
+      portfolio.transactions.push({
+        ticker,
+        shares,
+        price,
+        type: 'Sell',
+        profitOrLoss: transactionProfitOrLoss,
+        closed: true // Sell transaction is always closed
+      });
+    } else {
+      // Short sell
+      const additionalShortShares = shares - existingStock.shares;
+      const totalRevenue = shares * price;
+      portfolio.cash_balance -= totalRevenue;
+
+      existingStock.shares -= shares;
+
+      // Add short transaction
+      portfolio.transactions.push({
+        ticker,
+        shares: additionalShortShares,
+        price,
+        type: 'Short',
+        profitOrLoss: 0,
+        closed: false
+      });
     }
-
-    // Calculate profit or loss for the transaction
-    const transactionProfitOrLoss = (price - portfolio.stocks[stockIndex].average_price) * shares;
-
-    // Find the buy transaction for the same stock to close it
-    const openTransactionIndex = portfolio.transactions.findIndex(
-      transaction => transaction.ticker === ticker && transaction.type === 'Buy' && !transaction.closed
-    );
-
-    if (openTransactionIndex !== -1) {
-      portfolio.transactions[openTransactionIndex].closed = true;
-    }
-    console.log(`Selling ${shares} shares of ${ticker} at $${price} each. Stock info:`);
-
-    // Add sell transaction
-    portfolio.transactions.push({
-      ticker,
-      shares,
-      price,
-      type: 'Sell',
-      profitOrLoss: transactionProfitOrLoss,
-      closed: true // Sell transaction is always closed
-    });
 
     await portfolio.save();
     res.json(portfolio);
@@ -171,6 +253,9 @@ router.post('/sell', auth, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+module.exports = router;
+
 
 // Add favorite stock
 router.post('/favorite', auth , async (req,res ) => {

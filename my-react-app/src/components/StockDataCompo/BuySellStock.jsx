@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const BuySellStock = ({ shares, handleSharesInputChange, handleBuyStock, handleSellStock }) => {
+const BuySellStock = ({ shares, handleSharesInputChange, handleBuyStock, handleSellStock}) => {
   return (
     <BuySellContainer>
       <h3>Buy/Sell Stock</h3>
