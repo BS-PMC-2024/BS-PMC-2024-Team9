@@ -68,5 +68,5 @@ const DeleteButton = styled.button`
 
   svg {
     margin-left: 0.5rem; // מרווח קטן מהטקסט אם יש צורך
-  }
+}
 `;
