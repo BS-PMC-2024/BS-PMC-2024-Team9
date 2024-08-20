@@ -9,7 +9,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
 
-  const [user, setUser] = useState({
+  const [user, setUser] = useState({//set user detail
     email: "",
     password: "",
   });
