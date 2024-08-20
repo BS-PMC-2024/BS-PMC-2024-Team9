@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { url, urlBP, setHeaders } from './api';
 
-//react query
-
 const initialState = {
   data: JSON.parse(localStorage.getItem("stockData")) || null,
   news: JSON.parse(localStorage.getItem("stockNews")) || [],
@@ -172,6 +170,21 @@ const stockSlice = createSlice({
     resetOperationStatus: (state) => {
       state.operationStatus = null;
       state.error = null;
+    },
+
+    clearStockData: (state) => {
+      state.data = null;
+      state.news = [];
+      state.trades = [];
+      state.successRate = 0;
+      state.predictedPrice = null;
+      state.favorites = [];
+      localStorage.removeItem("stockData");
+      localStorage.removeItem("stockNews");
+      localStorage.removeItem("stockTrades");
+      localStorage.removeItem("stockSuccessRate");
+      localStorage.removeItem("stockPredictedPrice");
+      localStorage.removeItem("stockFavorites");
     }
   },
   extraReducers: (builder) => {
@@ -240,5 +253,5 @@ const stockSlice = createSlice({
       });
   },
 });
-export const { resetOperationStatus} = stockSlice.actions;
+export const { resetOperationStatus,clearStockData } = stockSlice.actions;
 export default stockSlice.reducer;

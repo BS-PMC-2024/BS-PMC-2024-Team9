@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { FaTrash } from 'react-icons/fa'; // ייבוא האייקון
 import { setHeaders, url } from '../../features/api';
 
 const Comments = ({ ticker }) => {
@@ -57,7 +58,9 @@ const Comments = ({ ticker }) => {
             <CommentHeader>
               <strong>{comment.user}</strong> <CommentDate>{new Date(comment.date).toLocaleString()}</CommentDate>
               {user.name === comment.user && (
-                <DeleteButton onClick={() => handleDelete(comment._id)}>Delete</DeleteButton>
+                <DeleteButton onClick={() => handleDelete(comment._id)}>
+                  <FaTrash /> {/* שימוש באייקון */}
+                </DeleteButton>
               )}
             </CommentHeader>
             {comment.comment}
@@ -85,10 +88,13 @@ export default Comments;
 
 const CommentsContainer = styled.div`
   background: #fff;
-  padding: 1rem;
-  border-radius: 10px;
+  padding: 2rem;
+  border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top: 2rem;
+  margin-top: 4rem;
+  h3{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
 `;
 
 const CommentList = styled.ul`
@@ -121,16 +127,16 @@ const CommentDate = styled.span`
 `;
 
 const DeleteButton = styled.button`
-  background: #e74c3c;
-  color: #fff;
+  background: transparent;
+  color: #e74c3c;
   border: none;
-  border-radius: 5px;
-  padding: 0.3rem 0.5rem;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
 
   &:hover {
-    background: #c0392b;
+    color: #c0392b;
   }
 `;
 
@@ -173,5 +179,5 @@ const SubmitButton = styled.button`
 const LoginMessage = styled.p`
   color: #888;
   font-style: italic;
-  text-align: center;
+  text-align: center;
 `;

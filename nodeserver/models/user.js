@@ -30,7 +30,10 @@ const userSchema = new mongoose.Schema({
   date: { type: Date, 
     default: Date.now 
   },
-
+  preferences: {
+    language: { type: String, default: 'English' },
+    timezone: { type: String, default: 'UTC' },
+  },
 });
 
 const User = mongoose.model("User", userSchema);

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const BuySellStock = ({ shares, handleSharesInputChange, handleBuyStock, handleSellStock }) => {
+const BuySellStock = ({ shares, handleSharesInputChange, handleBuyStock, handleSellStock}) => {
   return (
     <BuySellContainer>
       <h3>Buy/Sell Stock</h3>
@@ -26,6 +26,9 @@ const BuySellContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  h3{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
 `;
 
 const SharesInput = styled.input`

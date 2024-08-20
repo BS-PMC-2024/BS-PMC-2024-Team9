@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { FaTrash } from 'react-icons/fa'; // ייבוא האייקון
 
 const FavoriteStocks = ({ favorites, handleRemoveFavorite }) => {
   return (
@@ -13,7 +14,7 @@ const FavoriteStocks = ({ favorites, handleRemoveFavorite }) => {
               {favorite}
             </Link>
             <DeleteButton onClick={() => handleRemoveFavorite(favorite)}>
-              Remove
+              <FaTrash /> {/* שימוש באייקון */}
             </DeleteButton>
           </FavoriteItem>
         ))}
@@ -26,6 +27,9 @@ export default FavoriteStocks;
 
 const FavoritesContainer = styled.div`
   margin-top: 2rem;
+  h3{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
 `;
 
 const FavoriteList = styled.ul`
@@ -56,9 +60,16 @@ const DeleteButton = styled.button`
   border-radius: 5px;
   padding: 0.5rem 1rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.3s;
 
   &:hover {
     background: #c0392b;
   }
+
+  svg {
+    margin-left: 0.5rem; // מרווח קטן מהטקסט אם יש צורך
+}
 `;

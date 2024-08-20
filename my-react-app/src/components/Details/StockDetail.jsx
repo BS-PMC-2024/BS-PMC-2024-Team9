@@ -123,7 +123,6 @@ const StockDetail = () => {
   const [maValues, setMaValues] = useState({});
   const [lines, setLines] = useState([]);
   const [stockParams, setStockParams] = useState({});
-  const navigate = useNavigate();
 
   const fetchStockData = async (ticker, period, interval) => {
     try {
@@ -197,7 +196,7 @@ const StockDetail = () => {
   };
 
   const getDateOrDatetime = (item, interval) => {
-    const intradayIntervals = ['1m', '5m', '15m', '1h'];
+    const intradayIntervals = ['1m', '5m', '15m', '1h','1d'];
     return intradayIntervals.includes(interval) ? item.Datetime : item.Date;
   };
 

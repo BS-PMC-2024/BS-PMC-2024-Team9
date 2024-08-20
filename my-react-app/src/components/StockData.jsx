@@ -10,7 +10,6 @@ import PredictedPrice from './StockDataCompo/PredictedPrice';
 import BuySellStock from './StockDataCompo/BuySellStock';
 import FavoriteStocks from './StockDataCompo/FavoriteStocks';
 import Trades from './StockDataCompo/Trades';
-import TradingViewWidget from './tradingview/TradingViewWidget';
 import Comments from './Details/Comments';
 import {
   fetchStockData,
@@ -38,7 +37,6 @@ const StockData = () => {
   const [toDate, setToDate] = useState('');
   const [shares, setShares] = useState('');
   const [showBuySell, setShowBuySell] = useState(false);
-  const lastPrice = stock.data[stock.data.length - 1].Close.toFixed(2);
 
   useEffect(() => {
     if (stock.data && stock.data.length) {
@@ -47,6 +45,9 @@ const StockData = () => {
       setInterval(localStorage.getItem("lastInterval") || '1d');
     }
   }, []);
+  if (stock.data) {
+    const lastPrice = stock.data[stock.data.length - 1].Close.toFixed(2);    
+  }
 
   useEffect(() => {
     dispatch(fetchPortfolio());
@@ -56,19 +57,12 @@ const StockData = () => {
       cluster: 'eu'
     });
 
-    const channel = pusher.subscribe('price_alerts');
-    channel.bind('price_alert', function (data) {
-      console.log(`Received price alert: ${data.ticker} at ${data.price}`);
-      toast.info(`Price alert: ${data.ticker} has reached ${data.price}`);
-    });
-
     const newsChannel = pusher.subscribe('news_channel');
     newsChannel.bind('new_article', function (data) {
       console.log(`Received new article: ${data.title}`);
     });
 
     return () => {
-      pusher.unsubscribe('price_alerts');
       pusher.unsubscribe('news_channel');
     };
   }, [dispatch]);
@@ -106,8 +100,9 @@ const StockData = () => {
 
   useEffect(() => {
     if (stock.operationStatus === 'fulfilled') {
-      toast.success(`Operation successful: ${ticker} at the price of ${lastPrice}`);
       dispatch(resetOperationStatus());
+      const lastPrice = stock.data[stock.data.length - 1].Close.toFixed(2);    
+      toast.success(`Operation successful: ${ticker} at the price of ${lastPrice}`);
     } else if (stock.operationStatus === 'rejected') {
       toast.error(`Operation failed: ${stock.error}`);
       dispatch(resetOperationStatus());
@@ -155,14 +150,16 @@ const StockData = () => {
             fullWidth
             margin="normal"
           />
-          <TextField
-            label="Period"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            placeholder="e.g., 1d, 5d, 1mo, 6mo, 1y"
-            fullWidth
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel> Period </InputLabel>
+            <Select value={period} onChange={(e) => setPeriod(e.target.value)}>
+              <MenuItem value="1d">1 Day</MenuItem>
+              <MenuItem value="5d">5 Day</MenuItem>
+              <MenuItem value="1mo">1 Mounth</MenuItem>
+              <MenuItem value="6mo">6 Mounth</MenuItem>
+              <MenuItem value="1y">1 Year</MenuItem>
+            </Select>
+          </FormControl>
           <FormControl fullWidth margin="normal">
             <InputLabel>Interval</InputLabel>
             <Select value={interval} onChange={(e) => setInterval(e.target.value)}>
@@ -210,7 +207,8 @@ const StockData = () => {
             <Select value={strategy} onChange={(e) => setStrategy(e.target.value)}>
               <MenuItem value="ma_crossover">Moving Average Crossover</MenuItem>
               <MenuItem value="rsi">RSI</MenuItem>
-              <MenuItem value="mean_reversion">Mean Reversion</MenuItem>
+              <MenuItem value="macd">MACD</MenuItem>
+              <MenuItem value="bollinger_bands">Bollinger Bands</MenuItem>
             </Select>
           </FormControl>
           <Button type="submit" variant="contained" color="primary" fullWidth>
@@ -226,9 +224,17 @@ const StockData = () => {
         <NewsSection>
           <NewsCarousel news={stock.news} />
         </NewsSection>
-        <BuySellSection>
-          <BuySellStock showBuySell={showBuySell} shares={shares} handleSharesInputChange={handleSharesInputChange} handleBuyStock={handleBuyStock} handleSellStock={handleSellStock} />
-        </BuySellSection>
+        {user && user._id && ( // הצגת קניה ומכירה רק אם המשתמש מחובר
+          <BuySellSection>
+            <BuySellStock 
+              showBuySell={showBuySell} 
+              shares={shares} 
+              handleSharesInputChange={handleSharesInputChange} 
+              handleBuyStock={handleBuyStock} 
+              handleSellStock={handleSellStock} 
+              />
+          </BuySellSection>
+        )}
         <TradesSection>
           <Trades trades={stock.trades} successRate={stock.successRate} />
         </TradesSection>
@@ -242,11 +248,7 @@ const StockData = () => {
     </div>
   );
 };
-/*
- <TradingSection>
-          <TradingViewWidget />
-        </TradingSection>
-*/
+
 export default StockData;
 
 const Container = styled.div`
@@ -262,7 +264,7 @@ const InputSection = styled.div`
   flex-direction: column;
   gap: 1rem;
   position: absolute;
-  top: 155px;
+  top: 200px;
   left: 16px;
   font-size: 18px;
   
@@ -287,8 +289,8 @@ const BuySellSection = styled.div`
   background: #f9f9f9;
   padding: rem;
   position: absolute;
-  top: 300px;
-  right: 13.5cm;
+  top: 850px;
+  right: 14.5cm;
   font-size: 18px;
 
 `;
@@ -305,7 +307,7 @@ const NewsSection = styled.div`
   background: #f9f9f9;
   padding: 1rem;
   position: absolute;
-  top: 100px;
+  top: 120px;
   right: 16px;
   font-size: 18px;
 `;
@@ -314,8 +316,8 @@ const TradesSection = styled.div`
   background: #f9f9f9;
   padding: 1rem;
   position: absolute;
-  top: 450px;
-  right: 470px;
+  top: 850px;
+  right: 920px;
   font-size: 18px;
   
 `;
@@ -324,8 +326,8 @@ const PredictedSection = styled.div`
   background: #f9f9f9;
   padding: 1rem;
   position: absolute;
-  top: 100px;
-  right: 600px;
+  top: 850px;
+  right: 1400px;
   font-size: 18px;
 `;
 
@@ -334,7 +336,7 @@ const FavoriteSection = styled.div`
     font-size: 20px;
     align-items: center;
     grid-column: 2;
-    top: 720px;
+    top: 800px;
     position: absolute;
     left: 20px;
 
@@ -353,12 +355,14 @@ const TradingSection = styled.div`
 `;
 
 const CommentsSection = styled.div`
-      grid-column: 2;
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 18px;
+  font-size: 28px;
   position: absolute;
   right: 20px;
   top: 600px;
-`
+  width: 20%;
+  height: 40%;
+`;

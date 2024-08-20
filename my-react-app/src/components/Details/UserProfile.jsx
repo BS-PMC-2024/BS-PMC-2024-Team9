@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchPortfolio, fetchTransactions, addMoney, withdrawMoney } from '../../features/profileSlice';
+import { fetchPortfolio, fetchTransactions, addMoney, withdrawMoney, updateUserPreferences } from '../../features/profileSlice';
 import styled from 'styled-components';
-import { Button, TextField } from '@material-ui/core';
+import { Button, TextField, MenuItem, Select, FormControl, InputLabel } from '@material-ui/core';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { setHeaders, url } from '../../features/api';
+import { useTranslation } from 'react-i18next';
 
 const UserProfile = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,10 @@ const UserProfile = () => {
   const [amount, setAmount] = useState('');
   const [alerts, setAlerts] = useState([]);
   const [newAlert, setNewAlert] = useState({ ticker: '', price: '' });
+  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem('selectedLanguage') || 'en');
+  const [selectedTimezone, setSelectedTimezone] = useState('UTC');
+  const { t, i18n } = useTranslation();
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     dispatch(fetchPortfolio());
@@ -26,32 +31,36 @@ const UserProfile = () => {
         setAlerts(response.data);
       } catch (err) {
         console.error("Error fetching alerts:", err);
-        setError(err.response ? err.response.data.error : 'Error fetching data');
       }
     };
 
     fetchAlerts();
   }, [dispatch]);
 
+  useEffect(() => {
+    i18n.changeLanguage(selectedLanguage);
+    localStorage.setItem('selectedLanguage', selectedLanguage);
+  }, [selectedLanguage, i18n]);
+
   const handleAddMoney = async () => {
     const parsedAmount = parseFloat(amount);
     if (parsedAmount <= 0) {
-      toast.error('Amount must be greater than zero.');
+      toast.error(t('Amount must be greater than zero.'));
       return;
     }
     dispatch(addMoney(parsedAmount));
-    toast.success('The money has been deposited successfully.');
+    toast.success(t('The money has been deposited successfully.'));
     setAmount('');
   };
 
   const handleWithdrawMoney = async () => {
     const parsedAmount = parseFloat(amount);
     if (parsedAmount <= 0) {
-      toast.error('Amount must be greater than zero.');
+      toast.error(t('Amount must be greater than zero.'));
       return;
     }
     dispatch(withdrawMoney(parsedAmount));
-    toast.success('The money was withdrawn successfully.');
+    toast.success(t('The money was withdrawn successfully.'));
     setAmount('');
   };
 
@@ -68,14 +77,21 @@ const UserProfile = () => {
   };
 
   const handleAddAlert = async () => {
+    const parsedPrice = parseFloat(newAlert.price);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      toast.error(t('Price must be a positive number.'));
+      return;
+    }
+
     try {
       const response = await axios.post(`${url}/alerts`, newAlert, setHeaders());
       setAlerts([...alerts, response.data]);
-      toast.success('Alert added successfully.');
+      toast.success(t('Alert added successfully.'));
+      setNotifications([...notifications, { message: `Alert added for ${newAlert.ticker} at $${newAlert.price}` }]);
       setNewAlert({ ticker: '', price: '' });
     } catch (err) {
       console.error("Error adding alert:", err);
-      toast.error(err.response ? err.response.data.error : 'Error adding alert');
+      toast.error(t(err.response ? err.response.data.error : 'Error adding alert'));
     }
   };
 
@@ -83,34 +99,50 @@ const UserProfile = () => {
     try {
       await axios.delete(`${url}/alerts/${alertId}`, setHeaders());
       setAlerts(alerts.filter(alert => alert._id !== alertId));
-      toast.success('Alert deleted successfully.');
+      toast.success(t('Alert deleted successfully.'));
     } catch (err) {
       console.error("Error deleting alert:", err);
       toast.error(err.response ? err.response.data.error : 'Error deleting alert');
     }
   };
 
+  const handlePreferencesChange = (e) => {
+    const { name, value } = e.target;
+    setPreferences({ ...preferences, [name]: value });
+  };
+
+  const handleSavePreferences = () => {
+    const userId = user._id;
+    const preferences = {
+      language: selectedLanguage,
+      timezone: selectedTimezone,
+    };
+
+    dispatch(updateUserPreferences({ userId, preferences }));
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>{t('loading')}</div>;
   }
 
   if (error) {
-    return <ErrorMessage>Error: {error}</ErrorMessage>;
+    return <ErrorMessage>{t('error')}: {error}</ErrorMessage>;
   }
 
   // Separate open and closed transactions
-  const openTransactions = transactions.filter(transaction => !transaction.closed);
-  const closedTransactions = transactions.filter(transaction => transaction.closed);
+  const openTransactions = transactions.filter(transaction => transaction.closed === false);
+  const closedTransactions = transactions.filter(transaction => transaction.closed === true);
+  
 
   return (
     <Container>
-      <WelcomeMessage>Welcome back, {user.name}</WelcomeMessage>
+      <WelcomeMessage>{t('welcome')}, {user.name}</WelcomeMessage>
       <PortfolioContainer>
-        <SectionTitle>Your Portfolio</SectionTitle>
+        <SectionTitle>{t("Your Portfolio")}</SectionTitle>
         {portfolio ? (
           <div>
-            <CashBalance>Cash Balance: ${portfolio.cash_balance.toFixed(2)}</CashBalance>
-            <SectionTitle>Stocks</SectionTitle>
+            <CashBalance>{t("Cash Balance:")} ${portfolio.cash_balance.toFixed(2)}</CashBalance>
+            <SectionTitle>{t("Stocks")}</SectionTitle>
             <StockList>
               {portfolio.stocks.map((stock, index) => (
                 <StockItem key={index}>
@@ -128,19 +160,19 @@ const UserProfile = () => {
                 margin="normal"
               />
               <Button variant="contained" color="primary" onClick={handleAddMoney} fullWidth>
-                Add Money
+                {t('Add Money')}
               </Button>
               <Button variant="contained" color="secondary" onClick={handleWithdrawMoney} fullWidth>
-                Withdraw Money
+                {t("Withdraw Money")}
               </Button>
             </AddWithdrawSection>
-            <SectionTitle>Price Alerts</SectionTitle>
+            <SectionTitle>{t("Price Alerts")}</SectionTitle>
             <AlertList>
               {alerts.map((alert, index) => (
                 <AlertItem key={index}>
                   {alert.ticker} - ${alert.price.toFixed(2)}
                   <Button variant="contained" color="secondary" onClick={() => handleDeleteAlert(alert._id)}>
-                    Delete
+                    {t("Delete")}
                   </Button>
                 </AlertItem>
               ))}
@@ -164,7 +196,7 @@ const UserProfile = () => {
                 margin="normal"
               />
               <Button variant="contained" color="primary" onClick={handleAddAlert} fullWidth>
-                Add Alert
+                {t("Add Alert")}
               </Button>
             </AddAlertSection>
           </div>
@@ -172,9 +204,10 @@ const UserProfile = () => {
           <p>Loading portfolio...</p>
         )}
       </PortfolioContainer>
+      
       <TransactionsContainer>
         <SectionTitle>
-          Open Transactions
+          {t("Open Transactions")}
           <ToggleButton onClick={() => setShowOpenTransactions(!showOpenTransactions)}>
             {showOpenTransactions ? 'Hide' : 'Show'}
           </ToggleButton>
@@ -189,13 +222,13 @@ const UserProfile = () => {
               ))}
             </TransactionList>
           ) : (
-            <p>No open transactions.</p>
+            <p>{t("No open transactions")}.</p>
           )
         )}
       </TransactionsContainer>
       <TransactionsContainer>
         <SectionTitle>
-          Closed Transactions
+          {t("Closed Transactions")}
           <ToggleButton onClick={() => setShowClosedTransactions(!showClosedTransactions)}>
             {showClosedTransactions ? 'Hide' : 'Show'}
           </ToggleButton>
@@ -210,7 +243,7 @@ const UserProfile = () => {
               ))}
             </TransactionList>
           ) : (
-            <p>No closed transactions.</p>
+            <p>{t("No closed transactions")}.</p>
           )
         )}
       </TransactionsContainer>
@@ -221,7 +254,7 @@ const UserProfile = () => {
 export default UserProfile;
 
 const Container = styled.div`
-  padding: 2rem;
+  padding: 4rem;
   background: #f5f5f5;
   min-height: 100vh;
 `;
@@ -352,4 +385,18 @@ const AlertItem = styled.li`
   &:hover {
     background: #eaeaea;
   }
+`;
+
+const PreferencesContainer = styled.div`
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+`;
+
+const PreferencesForm = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;

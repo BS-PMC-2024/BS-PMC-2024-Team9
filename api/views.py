@@ -107,8 +107,68 @@ def apply_strategy(data, strategy):
         return ma_crossover_strategy(data)
     elif strategy == 'rsi':
         return rsi_strategy(data)
+    elif strategy == 'macd':
+        return macd_strategy(data)
+    elif strategy == 'bollinger_bands':
+        return bollinger_bands_strategy(data)
     else:
-        return [],0
+        return [], 0
+
+def macd_strategy(data):
+    # Define MACD strategy
+    data['EMA12'] = data['Close'].ewm(span=12, adjust=False).mean()
+    data['EMA26'] = data['Close'].ewm(span=26, adjust=False).mean()
+    data['MACD'] = data['EMA12'] - data['EMA26']
+    data['Signal_Line'] = data['MACD'].ewm(span=9, adjust=False).mean()
+    
+    data['Signal'] = 0
+    data['Signal'][data['MACD'] > data['Signal_Line']] = 1
+    data['Signal'][data['MACD'] < data['Signal_Line']] = -1
+    data['Position'] = data['Signal'].diff()
+    
+    trades = []
+    success_trades = 0
+    total_trades = 0
+    
+    for index, row in data.iterrows():
+        if row['Position'] == 1:
+            trades.append({'Datetime': index, 'Type': 'Buy', 'Price': row['Close']})
+        elif row['Position'] == -1:
+            trades.append({'Datetime': index, 'Type': 'Sell', 'Price': row['Close']})
+            total_trades += 1
+            if trades[-2]['Price'] < row['Close']:
+                success_trades += 1
+    
+    success_rate = (success_trades / total_trades) * 100 if total_trades > 0 else 0
+    return trades, success_rate
+
+def bollinger_bands_strategy(data):
+    # Define Bollinger Bands strategy
+    data['20_SMA'] = data['Close'].rolling(window=20).mean()
+    data['20_STD'] = data['Close'].rolling(window=20).std()
+    data['Upper_Band'] = data['20_SMA'] + (2 * data['20_STD'])
+    data['Lower_Band'] = data['20_SMA'] - (2 * data['20_STD'])
+    
+    data['Signal'] = 0
+    data['Signal'][data['Close'] < data['Lower_Band']] = 1
+    data['Signal'][data['Close'] > data['Upper_Band']] = -1
+    data['Position'] = data['Signal'].diff()
+    
+    trades = []
+    success_trades = 0
+    total_trades = 0
+    
+    for index, row in data.iterrows():
+        if row['Position'] == 1:
+            trades.append({'Datetime': index, 'Type': 'Buy', 'Price': row['Close']})
+        elif row['Position'] == -1:
+            trades.append({'Datetime': index, 'Type': 'Sell', 'Price': row['Close']})
+            total_trades += 1
+            if trades[-2]['Price'] < row['Close']:
+                success_trades += 1
+    
+    success_rate = (success_trades / total_trades) * 100 if total_trades > 0 else 0
+    return trades, success_rate
 
 def ma_crossover_strategy(data):
     # Define simple moving average crossover strategy
@@ -196,6 +256,7 @@ def send_price_alert(ticker, price, new_data):
     pusher_client.trigger('news_channel', 'news_channel', {'articles': new_data})
     
 
+'''
 def stock_detail_view(request, ticker):
     stock = yf.Ticker(ticker)
 
@@ -222,4 +283,4 @@ def stock_detail_view(request, ticker):
 
     return JsonResponse(response_data)
 
-
+'''
