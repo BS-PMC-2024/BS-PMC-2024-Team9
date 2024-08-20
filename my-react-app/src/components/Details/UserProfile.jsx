@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchPortfolio, fetchTransactions, addMoney, withdrawMoney ,updateUserPreferences} from '../../features/profileSlice';
+import { fetchPortfolio, fetchTransactions, addMoney, withdrawMoney, updateUserPreferences } from '../../features/profileSlice';
 import styled from 'styled-components';
 import { Button, TextField, MenuItem, Select, FormControl, InputLabel } from '@material-ui/core';
 import { toast } from 'react-toastify';
@@ -17,9 +17,10 @@ const UserProfile = () => {
   const [amount, setAmount] = useState('');
   const [alerts, setAlerts] = useState([]);
   const [newAlert, setNewAlert] = useState({ ticker: '', price: '' });
-  const [selectedLanguage, setSelectedLanguage] = useState( localStorage.getItem('selectedLanguage') || 'en'); // הוסף את זה
-  const [selectedTimezone, setSelectedTimezone] = useState('UTC'); // הוסף את זה
+  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem('selectedLanguage') || 'en');
+  const [selectedTimezone, setSelectedTimezone] = useState('UTC');
   const { t, i18n } = useTranslation();
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     dispatch(fetchPortfolio());
@@ -30,7 +31,6 @@ const UserProfile = () => {
         setAlerts(response.data);
       } catch (err) {
         console.error("Error fetching alerts:", err);
-        setError(err.response ? err.response.data.error : 'Error fetching data');
       }
     };
 
@@ -39,8 +39,8 @@ const UserProfile = () => {
 
   useEffect(() => {
     i18n.changeLanguage(selectedLanguage);
-    localStorage.setItem('selectedLanguage' , selectedLanguage);
-  } , [selectedLanguage , i18n]);
+    localStorage.setItem('selectedLanguage', selectedLanguage);
+  }, [selectedLanguage, i18n]);
 
   const handleAddMoney = async () => {
     const parsedAmount = parseFloat(amount);
@@ -77,7 +77,6 @@ const UserProfile = () => {
   };
 
   const handleAddAlert = async () => {
-    // Validate that the price is a positive number
     const parsedPrice = parseFloat(newAlert.price);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
       toast.error(t('Price must be a positive number.'));
@@ -88,6 +87,7 @@ const UserProfile = () => {
       const response = await axios.post(`${url}/alerts`, newAlert, setHeaders());
       setAlerts([...alerts, response.data]);
       toast.success(t('Alert added successfully.'));
+      setNotifications([...notifications, { message: `Alert added for ${newAlert.ticker} at $${newAlert.price}` }]);
       setNewAlert({ ticker: '', price: '' });
     } catch (err) {
       console.error("Error adding alert:", err);
@@ -112,27 +112,27 @@ const UserProfile = () => {
   };
 
   const handleSavePreferences = () => {
-    const userId = user._id; // וודא שה-`user` קיים ויש לו `_id`
+    const userId = user._id;
     const preferences = {
       language: selectedLanguage,
       timezone: selectedTimezone,
     };
-  
+
     dispatch(updateUserPreferences({ userId, preferences }));
   };
-  
 
   if (loading) {
     return <div>{t('loading')}</div>;
   }
 
   if (error) {
-    return <ErrorMessage>{t('error')}: {error}</ErrorMessage>; 
+    return <ErrorMessage>{t('error')}: {error}</ErrorMessage>;
   }
 
   // Separate open and closed transactions
-  const openTransactions = transactions.filter(transaction => !transaction.closed);
-  const closedTransactions = transactions.filter(transaction => transaction.closed);
+  const openTransactions = transactions.filter(transaction => transaction.closed === false);
+  const closedTransactions = transactions.filter(transaction => transaction.closed === true);
+  
 
   return (
     <Container>
@@ -163,7 +163,7 @@ const UserProfile = () => {
                 {t('Add Money')}
               </Button>
               <Button variant="contained" color="secondary" onClick={handleWithdrawMoney} fullWidth>
-               {t("Withdraw Money")}
+                {t("Withdraw Money")}
               </Button>
             </AddWithdrawSection>
             <SectionTitle>{t("Price Alerts")}</SectionTitle>
@@ -247,28 +247,6 @@ const UserProfile = () => {
           )
         )}
       </TransactionsContainer>
-      <PreferencesContainer>
-        <SectionTitle>{t('user_preferences')}</SectionTitle> {/* הוסף את זה */}
-        <PreferencesForm>
-          <label>
-            {t('language')}:
-            <select value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)}>
-              <option value="en">English</option>
-              <option value="he">עברית</option>
-            </select>
-          </label>
-          <label>
-            {t('timezone')}:
-            <select value={selectedTimezone} onChange={(e) => setSelectedTimezone(e.target.value)}>
-              <option value="UTC">UTC</option>
-              <option value="GMT">GMT</option>
-            </select>
-          </label>
-          <Button variant="contained" color="primary" onClick={handleSavePreferences}>
-            {t('save_preferences')} 
-          </Button>
-        </PreferencesForm>
-      </PreferencesContainer>
     </Container>
   );
 };
@@ -276,7 +254,7 @@ const UserProfile = () => {
 export default UserProfile;
 
 const Container = styled.div`
-  padding: 2rem;
+  padding: 4rem;
   background: #f5f5f5;
   min-height: 100vh;
 `;

@@ -5,11 +5,12 @@ import styled from 'styled-components';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import PersonIcon from '@material-ui/icons/Person';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { useTranslation } from 'react-i18next';
 //import WelcomeImage from '../../assets/hai.jpg' // תחליף בנתיב לתמונה שלך
 
 const UserGreeting = () => {
   const dispatch = useDispatch();
-
+  const { t } = useTranslation();
   useEffect(() => {
     dispatch(fetchPortfolio());
   }, [dispatch]);
@@ -24,15 +25,15 @@ const UserGreeting = () => {
   return (
     <Container>
       <GreetingCard>
-        {user ? (
+      {user && user._id ? ( // בדיקה אם יש משתמש מחובר
           <>
             <PersonIcon style={{ fontSize: 80, color: '#3f51b5' }} />
-            <h1>Welcome back, {user.name}!</h1>
+            <h1>{t('Welcome back')}, {user.name}!</h1>
           </>
         ) : (
           <>
             <PersonIcon style={{ fontSize: 80, color: '#3f51b5' }} />
-            <h1>Welcome to Our Investment Platform!</h1>
+            <h1>{t("Welcome, Guest")}!</h1> {/* שינוי הטקסט כאשר אין משתמש מחובר */}
           </>
         )}
         <WalletSection>
@@ -43,7 +44,7 @@ const UserGreeting = () => {
             ) : error ? (
               <div severity="error">Error loading portfolio: {error}</div>
             ) : portfolio ? (
-              <BalanceText>Your cash balance is: {formatCurrency(portfolio.cash_balance)}</BalanceText>
+              <BalanceText>{t("Your cash balance is")}: {formatCurrency(portfolio.cash_balance)}</BalanceText>
             ) : (
               <div severity="warning">Portfolio not found.</div>
             )}

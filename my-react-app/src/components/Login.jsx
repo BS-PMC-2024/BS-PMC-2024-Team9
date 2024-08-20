@@ -18,7 +18,7 @@ const Login = () => {
     console.log("User ID:", auth._id); // For debugging
     if (auth._id && !auth.isAdmin) {
       console.log("User ID:", auth._id);
-      navigate("/stockdata");
+      navigate("/");
     }
     else if (auth._id){
       navigate("/")

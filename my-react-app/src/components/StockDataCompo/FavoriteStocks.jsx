@@ -27,6 +27,9 @@ export default FavoriteStocks;
 
 const FavoritesContainer = styled.div`
   margin-top: 2rem;
+  h3{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
 `;
 
 const FavoriteList = styled.ul`

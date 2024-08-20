@@ -26,6 +26,9 @@ const BuySellContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  h3{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
 `;
 
 const SharesInput = styled.input`

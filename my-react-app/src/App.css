@@ -118,7 +118,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: rgb(79, 139, 230);
+  background-color: rgb(233, 135, 49);
   color: white;
   padding: 1.2rem;
   z-index: 1000;
@@ -151,7 +151,9 @@
 .navbar-link {
   color: white;
   text-decoration: none;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-style:unset;
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .navbar-link:hover {
@@ -169,8 +171,9 @@
 
 .user-greeting {
   font-size: 30px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   color: #ffffff;
-  right: 120px;
+  left: 60px;
   position: absolute;
   top: 27px;
 }

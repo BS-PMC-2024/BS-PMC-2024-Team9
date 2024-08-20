@@ -20,7 +20,7 @@ const calculateMovingAverage = (data, window) => {
 
 // Check the date
 const getDateOrDatetime = (item, interval) => {
-  const intradayIntervals = ['1m', '2m' ,'5m', '15m', '60m'];
+  const intradayIntervals = ['1m', '2m' ,'5m','30m', '15m', '60m','1d'];
   const dateValue = intradayIntervals.includes(interval) ? item.Datetime : item.Date;
   return dateValue;
 };
@@ -82,12 +82,12 @@ const ChartContainer = styled.div`
   
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 60%;
   grid-column: 2;
   align-items: center;
   font-size: 18px;
   position: absolute;
   left: 400px;
-  top: 120px;
+  top: 185px;
 
 `;

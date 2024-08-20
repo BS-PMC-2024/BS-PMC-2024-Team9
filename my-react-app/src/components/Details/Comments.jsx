@@ -88,10 +88,13 @@ export default Comments;
 
 const CommentsContainer = styled.div`
   background: #fff;
-  padding: 1rem;
-  border-radius: 10px;
+  padding: 2rem;
+  border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top: 2rem;
+  margin-top: 4rem;
+  h3{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
 `;
 
 const CommentList = styled.ul`

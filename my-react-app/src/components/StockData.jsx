@@ -224,15 +224,17 @@ const StockData = () => {
         <NewsSection>
           <NewsCarousel news={stock.news} />
         </NewsSection>
-        <BuySellSection>
-          <BuySellStock 
-            showBuySell={showBuySell} 
-            shares={shares} 
-            handleSharesInputChange={handleSharesInputChange} 
-            handleBuyStock={handleBuyStock} 
-            handleSellStock={handleSellStock} 
-            />
-        </BuySellSection>
+        {user && user._id && ( // הצגת קניה ומכירה רק אם המשתמש מחובר
+          <BuySellSection>
+            <BuySellStock 
+              showBuySell={showBuySell} 
+              shares={shares} 
+              handleSharesInputChange={handleSharesInputChange} 
+              handleBuyStock={handleBuyStock} 
+              handleSellStock={handleSellStock} 
+              />
+          </BuySellSection>
+        )}
         <TradesSection>
           <Trades trades={stock.trades} successRate={stock.successRate} />
         </TradesSection>
@@ -262,7 +264,7 @@ const InputSection = styled.div`
   flex-direction: column;
   gap: 1rem;
   position: absolute;
-  top: 155px;
+  top: 200px;
   left: 16px;
   font-size: 18px;
   
@@ -287,8 +289,8 @@ const BuySellSection = styled.div`
   background: #f9f9f9;
   padding: rem;
   position: absolute;
-  top: 300px;
-  right: 13.5cm;
+  top: 850px;
+  right: 14.5cm;
   font-size: 18px;
 
 `;
@@ -305,7 +307,7 @@ const NewsSection = styled.div`
   background: #f9f9f9;
   padding: 1rem;
   position: absolute;
-  top: 100px;
+  top: 120px;
   right: 16px;
   font-size: 18px;
 `;
@@ -314,8 +316,8 @@ const TradesSection = styled.div`
   background: #f9f9f9;
   padding: 1rem;
   position: absolute;
-  top: 450px;
-  right: 470px;
+  top: 850px;
+  right: 920px;
   font-size: 18px;
   
 `;
@@ -324,8 +326,8 @@ const PredictedSection = styled.div`
   background: #f9f9f9;
   padding: 1rem;
   position: absolute;
-  top: 100px;
-  right: 600px;
+  top: 850px;
+  right: 1400px;
   font-size: 18px;
 `;
 
@@ -334,7 +336,7 @@ const FavoriteSection = styled.div`
     font-size: 20px;
     align-items: center;
     grid-column: 2;
-    top: 740px;
+    top: 800px;
     position: absolute;
     left: 20px;
 
@@ -353,12 +355,14 @@ const TradingSection = styled.div`
 `;
 
 const CommentsSection = styled.div`
-      grid-column: 2;
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 18px;
+  font-size: 28px;
   position: absolute;
   right: 20px;
   top: 600px;
+  width: 20%;
+  height: 40%;
 `;

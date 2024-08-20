@@ -16,7 +16,7 @@ const triggerAlerts = async () => {
   
   alerts.forEach(async (alert) => {
     const stockData = await getStockData(alert.ticker); // Function to get the latest stock price
-   // console.log("pa",stockData.c);
+    console.log("pa",stockData.c);
     if (stockData.c >= alert.price) {
       pusher.trigger('price_alerts', 'price_alert', {
         ticker: alert.ticker,

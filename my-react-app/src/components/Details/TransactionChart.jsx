@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { url, setHeaders } from "../../features/api"; // Adjusted import path
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const TransactionChart = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
 
   const compare = (a, b) => {
     if (a._id < b._id) {
@@ -45,7 +47,7 @@ const TransactionChart = () => {
         <Loader>Loading Chart...</Loader>
       ) : (
         <StyledChart>
-          <h3>Transaction Profits/Losses</h3>
+          <h3>{t("Transaction Profits/Losses")}</h3>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               width={500}

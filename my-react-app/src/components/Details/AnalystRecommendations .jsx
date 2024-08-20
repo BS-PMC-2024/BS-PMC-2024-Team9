@@ -56,7 +56,7 @@ const AnalystRecommendations = () => {
 export default AnalystRecommendations;
 
 const Container = styled.div`
-  padding: 2rem;
+  padding: 4rem;
   background: #f5f5f5;
   min-height: 100vh;
 `;
