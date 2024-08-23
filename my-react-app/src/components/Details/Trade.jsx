@@ -1,12 +1,14 @@
 import React from 'react';
 import TradingViewWidget from '../tradingview/TradingViewWidget';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 const Trade = () => {
+  const {t } = useTranslation();
   return (
     <TradingSection>
       <Description>
-        כאן תוכלו לנתח מניות ולבצע כל מיני ביצועים וניתוחים טכניים. השתמשו בכלים הזמינים כדי לבחון מגמות, לזהות דפוסים, ולבצע החלטות מושכלות על בסיס נתונים עדכניים.
+        {t('Here you can analyze stocks and perform all kinds of performance and technical analysis.Use the tools available to examine trends, identify patterns, and make informed decisions based on up-to-date data')}.
       </Description>
       <TradingViewWidget />
     </TradingSection>
