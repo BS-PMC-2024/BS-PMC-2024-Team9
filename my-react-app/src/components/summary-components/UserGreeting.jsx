@@ -6,7 +6,6 @@ import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import PersonIcon from '@material-ui/icons/Person';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useTranslation } from 'react-i18next';
-//import WelcomeImage from '../../assets/hai.jpg' // תחליף בנתיב לתמונה שלך
 
 const UserGreeting = () => {
   const dispatch = useDispatch();

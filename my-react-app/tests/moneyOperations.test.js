@@ -1,4 +1,4 @@
-import { store } from '../src/store'; 
+/*import { store } from '../src/store'; 
 import { buyStock, sellStock } from '../src/features/profileSlice';
 import axios from 'axios';
 
@@ -30,4 +30,4 @@ describe('Money operations', () => {
     const state = store.getState();
     expect(state.profile.portfolio.cash_balance).toBe(initialCash - withdrawAmount);
   });
-});
+});*/

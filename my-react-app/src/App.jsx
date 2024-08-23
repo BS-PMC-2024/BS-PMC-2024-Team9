@@ -13,7 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Home from './components/Home';
 import StockDetail from './components/Details/StockDetail';
 import AnalystRecommendations from './components/Details/AnalystRecommendations ';
-import Trade from './components/admin/Trade';
+import Trade from './components/Details/Trade';
 import AdminPanel from './components/admin/AdminPanel';
 import './i18n';
 import { useTranslation } from 'react-i18next';

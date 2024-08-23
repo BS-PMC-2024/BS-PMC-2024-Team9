@@ -1,7 +1,7 @@
 import React from 'react';
 import { render , screen  } from "@testing-library/react";
 import Home from '../src/components/Home';
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 jest.mock('react-redux');
 
