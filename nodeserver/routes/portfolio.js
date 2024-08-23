@@ -1,6 +1,28 @@
 const { auth, isUser } = require('../middleware/auth');
 const { Portfolio } = require('../models/portfolio');
 const router = require("express").Router();
+const { isAdmin } = require('../middleware/auth');
+
+// Get total transactions and open transactions for the admin dashboard
+router.get('/stats/transactions', isAdmin, async (req, res) => {
+  try {
+    const portfolios = await Portfolio.find({});
+
+    // סה"כ עסקאות
+    const totalTransactions = portfolios.reduce((acc, portfolio) => acc + portfolio.transactions.length, 0);
+
+    // עסקאות פתוחות
+    const openTransactions = portfolios.reduce((acc, portfolio) => {
+      const openTrans = portfolio.transactions.filter(transaction => !transaction.closed).length;
+      return acc + openTrans;
+    }, 0);
+
+    res.json({ totalTransactions, openTransactions });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
 
 // Get user's portfolio
 router.get('/', auth,  async (req, res) => {
