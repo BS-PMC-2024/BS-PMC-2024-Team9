@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaTrash } from 'react-icons/fa'; // ייבוא האייקון
-
+//favorite stocks.
 const FavoriteStocks = ({ favorites, handleRemoveFavorite }) => {
   return (
     <FavoritesContainer>
